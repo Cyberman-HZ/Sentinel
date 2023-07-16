@@ -1,0 +1,21 @@
+let event17 = WindowsEvent 
+| where EventID == 17 
+| extend Image=EventData.Image
+| extend  PipeName=EventData.PipeName 
+| where Image has "svchost.exe" and PipeName has "winreg";
+let event7 = WindowsEvent 
+| where EventID == 7  
+| extend Image=EventData.Image
+| extend  ImageLoaded=EventData.ImageLoaded 
+| where Image has "svchost.exe" and ImageLoaded has "regsvc.dll";
+let event12 = WindowsEvent 
+| where EventID == 12 
+| extend Image=EventData.Image
+| extend  TargetObject=EventData.TargetObject 
+| where TargetObject has "SAM" and Image has "svchost";
+let event11 = WindowsEvent 
+| where EventID == 11 
+| extend  TargetFilename=EventData.TargetFilename 
+| where TargetFilename has ".tmp" and TargetFilename has "system32";
+let combine = event7 | union event11 |union event12 | union event17;
+combine
